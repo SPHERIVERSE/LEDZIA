@@ -359,17 +359,14 @@ While the MVP focuses on core attendance management, the architecture is designe
 
 
 
-| Name          | Role                           |
+## 👥 Contributors
 
-| ------------- | ------------------------------ |
-
-| Your Name     | Lead Web Developer / Architect |
-
-| Team Member 2 | Role / Contribution            |
-
-| Team Member 3 | Role / Contribution            |
-
-
+| Name | Roll No. | Role / Contribution |
+| :--- | :--- | :--- |
+| **Kukil Nath** | 230710007028 | Lead Web Developer & Manual Attendance Module |
+| **Kaushik Nath** | 230710007024 | System Architect & Cryptographic QR Security |
+| **Himangshu Das** | 230710007015 | Database Architecture & Relational Schema Design |
+| **Abhinav Pritam Neog** | 230711507071 | Prisma ORM Integration & Transaction Optimization |
 
 ---
 
