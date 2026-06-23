@@ -61,6 +61,9 @@ Security was built into the foundational data model, not tacked on at the end. T
 * **ORM:** [Prisma](https://www.prisma.io/) for strictly typed database querying
 * **Architecture:** Adheres to 3NF, utilizing cascading deletions and compound constraints (`@@unique`) for uncompromisable data integrity.
 
+### Entity Relationship Diagram
+![LEDZIA Entity Relationship (ER) Diagram](LEDZIA_ERD.png)
+
 ---
 
 # 🚀 Getting Started (Local Development)
