@@ -1,0 +1,121 @@
+// This is your system's backbone. 
+// Note the 'AttendanceRecord' includes a 'deviceTimestamp' to 
+// handle offline markings accurately when synced later.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+}
+
+model Institution {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+}
+
+// SINGLE User Model (Make sure there are no other 'model User' blocks)
+model User {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  password       String?
+  name           String
+  role           Role
+  
+  // Stub Account Fields
+  rollNumber     String?     @unique 
+  isRegistered   Boolean     @default(true)
+
+  // Institution Relation
+  institutionId  String?     
+  institution    Institution? @relation(fields: [institutionId], references: [id])
+  
+  // Existing relations
+  subjectsTaught Subject[]    @relation("TeacherToSubject")
+  enrollments    Enrollment[]
+  attendance     AttendanceRecord[]
+  createdAt      DateTime     @default(now())
+}
+
+model Course {
+  id        String    @id @default(uuid())
+  name      String    // e.g., B.Tech CSE
+  code      String    @unique
+  subjects  Subject[]
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Subject {
+  id        String    @id @default(uuid())
+  name      String    // e.g., Software Engineering
+  courseId  String
+  course    Course    @relation(fields: [courseId], references: [id])
+  
+  teacherId String
+  teacher   User      @relation("TeacherToSubject", fields: [teacherId], references: [id])
+  
+  enrollments Enrollment[]
+  
+  // Subjects now have Sessions instead of direct AttendanceRecords
+  sessions    Session[]
+}
+
+model Enrollment {
+  id        String  @id @default(uuid())
+  studentId String
+  student   User    @relation(fields: [studentId], references: [id])
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, subjectId])
+}
+
+// The Parent: Represents a single day's class
+model Session {
+  id              String   @id @default(uuid())
+  subjectId       String
+  subject         Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  
+  date            DateTime @default(now()) // When the session was initiated
+  method          String   @default("MANUAL") // "MANUAL" or "QR"
+  
+  // A session has many individual student records
+  records         AttendanceRecord[]
+  
+  createdAt       DateTime @default(now())
+}
+
+// The Child: Represents a single student's status for that specific session
+model AttendanceRecord {
+  id              String   @id @default(uuid())
+  
+  sessionId       String
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  studentId       String
+  student         User     @relation(fields: [studentId], references: [id])
+  
+  isPresent       Boolean  @default(false)
+  
+  // The exact millisecond this specific student was marked present/absent
+  markedAt        DateTime @default(now()) 
+  
+  // Ensure a student can only have ONE record per session
+  @@unique([sessionId, studentId])
+}
+
